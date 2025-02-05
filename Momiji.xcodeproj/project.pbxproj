@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		9115498F2D521C6D00489C30 /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = 9115498E2D521C6D00489C30 /* RealityKitContent */; };
+		911549C82D52216800489C30 /* NostrClient in Frameworks */ = {isa = PBXBuildFile; productRef = 911549C72D52216800489C30 /* NostrClient */; };
+		911549CB2D5221C300489C30 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 911549CA2D5221C300489C30 /* KeychainAccess */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,10 +29,10 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		911549AA2D521C6E00489C30 /* Exceptions for "Momiji" folder in "Momiji" target */ = {
+		91154A5A2D523E8600489C30 /* Exceptions for "Momiji" folder in "Momiji" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
+				Resources/Info.plist,
 			);
 			target = 911549882D521C6D00489C30 /* Momiji */;
 		};
@@ -40,7 +42,7 @@
 		9115498B2D521C6D00489C30 /* Momiji */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				911549AA2D521C6E00489C30 /* Exceptions for "Momiji" folder in "Momiji" target */,
+				91154A5A2D523E8600489C30 /* Exceptions for "Momiji" folder in "Momiji" target */,
 			);
 			path = Momiji;
 			sourceTree = "<group>";
@@ -57,7 +59,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				911549C82D52216800489C30 /* NostrClient in Frameworks */,
 				9115498F2D521C6D00489C30 /* RealityKitContent in Frameworks */,
+				911549CB2D5221C300489C30 /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,6 +123,8 @@
 			name = Momiji;
 			packageProductDependencies = (
 				9115498E2D521C6D00489C30 /* RealityKitContent */,
+				911549C72D52216800489C30 /* NostrClient */,
+				911549CA2D5221C300489C30 /* KeychainAccess */,
 			);
 			productName = Momiji;
 			productReference = 911549892D521C6D00489C30 /* Momiji.app */;
@@ -175,6 +181,10 @@
 			);
 			mainGroup = 911549802D521C6D00489C30;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				911549C62D52216800489C30 /* XCRemoteSwiftPackageReference "NostrClient" */,
+				911549C92D5221C300489C30 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9115498A2D521C6D00489C30 /* Products */;
 			projectDirPath = "";
@@ -240,7 +250,7 @@
 				DEVELOPMENT_TEAM = F53VTJ7REG;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "$(TARGET_NAME)/Info.plist";
+				INFOPLIST_FILE = "$(TARGET_NAME)/Resources/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -266,7 +276,7 @@
 				DEVELOPMENT_TEAM = F53VTJ7REG;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "$(TARGET_NAME)/Info.plist";
+				INFOPLIST_FILE = "$(TARGET_NAME)/Resources/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -472,10 +482,39 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		911549C62D52216800489C30 /* XCRemoteSwiftPackageReference "NostrClient" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Galaxoid-Labs/NostrClient.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		911549C92D5221C300489C30 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		9115498E2D521C6D00489C30 /* RealityKitContent */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RealityKitContent;
+		};
+		911549C72D52216800489C30 /* NostrClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 911549C62D52216800489C30 /* XCRemoteSwiftPackageReference "NostrClient" */;
+			productName = NostrClient;
+		};
+		911549CA2D5221C300489C30 /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 911549C92D5221C300489C30 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
