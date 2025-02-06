@@ -9,5 +9,4 @@ struct ChatGroupMetadata: Identifiable, Encodable, Hashable {
     var isOpen: Bool
     var isMember: Bool
     var isAdmin: Bool
-    var link: String?
 }

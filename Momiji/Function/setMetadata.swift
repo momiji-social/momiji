@@ -9,9 +9,6 @@ func handleSetMetadata(appState: AppState, event: Event) {
         let userMetadata = createUserMetadata(from: event, name: name, about: about, picture: picture, nip05: nip05, displayName: displayName, website: website, banner: banner, bot: bot, lud16: lud16)
 
         if event.pubkey == appState.selectedOwnerAccount?.publicKey && appState.ownerPostContents.count == 0 {
-            DispatchQueue.main.async {
-                appState.allUserMetadata.append(userMetadata)
-            }
             handleSelectedOwnerProfile(
                 pubkey: event.pubkey,
                 name: name,
@@ -62,6 +59,10 @@ private func decodeUserMetadata(from content: String) -> (
 }
 
 private func createUserMetadata(from event: Event, name: String?, about: String?, picture: String?, nip05: String?, displayName: String?, website: String?, banner: String?, bot: Bool?, lud16: String?) -> UserMetadata {
+    
+    let tags = event.tags.map({ $0 })
+    let link = tags.first(where: { $0.id == "facetime" })?.otherInformation.first
+    
     return UserMetadata(
         publicKey: event.pubkey,
         bech32PublicKey: {
@@ -79,13 +80,17 @@ private func createUserMetadata(from event: Event, name: String?, about: String?
         banner: banner,
         bot: bot,
         lud16: lud16,
-        createdAt: event.createdAt.date
+        createdAt: event.createdAt.date,
+        facetime: link
     )
 }
 
 private func updateChatMessages(for event: Event, with userMetadata: UserMetadata, appState: AppState) {
     DispatchQueue.main.async {
-        if userMetadata.publicKey != appState.selectedOwnerAccount?.publicKey {
+        // Edit if the same already exists, add if not
+        if let index = appState.allUserMetadata.firstIndex(where: { $0.publicKey == userMetadata.publicKey }) {
+            appState.allUserMetadata[index] = userMetadata
+        } else {
             appState.allUserMetadata.append(userMetadata)
         }
         appState.allChatMessage = appState.allChatMessage.map { message in

@@ -66,7 +66,7 @@ struct SessionDetailView: View {
                 
                 HStack(spacing: 20) {
                     // MARK: すでにShareplayセッションが確立されている状態
-                    if group.isMember && groupActivityManager.isSharePlaying {
+                    if groupActivityManager.isSharePlaying {
                         Button(action: {
                             Task {
                                 // SharePlayセッションを終了する
@@ -83,11 +83,12 @@ struct SessionDetailView: View {
                                 .padding()
                         }.tint(.red)
                     // MARK: Shareplayセッションを確立していない場合
-                    } else if !group.isMember && !groupActivityManager.isSharePlaying  {
+                    } else {
                         Button(action: {
                             Task{
-                                let newFaceTimeLink = "https://facetime.apple.com/join#v=1&p=t9aoR9YKEe+d4VrAeXsElw&k=moGs7GGvqaK0GbDNOuyS87l4NQJolINBqXuvV_Ft_Kw"
-                                if let url = URL(string: newFaceTimeLink) {
+                                // MARK: Adminが複数存在するという状態を省く必要がある
+                                let faceTimeLink = fetchAdminUserMetadata().first?.facetime ?? ""
+                                if let url = URL(string: faceTimeLink) {
                                     await UIApplication.shared.open(url)
                                 }
                             }
@@ -96,7 +97,7 @@ struct SessionDetailView: View {
                                 .frame(maxWidth: .infinity)
                                 .padding()
                         }
-                        .disabled(groupStateObserver.isEligibleForGroupSession)
+                        .disabled(groupStateObserver.isEligibleForGroupSession || fetchAdminUserMetadata().first?.facetime == nil)
                         .tint(.green)
                         Button(action: {
                             Task {
@@ -231,6 +232,14 @@ struct SessionDetailView: View {
             .padding(.vertical)
             .padding(.trailing, 100)
             .frame(maxWidth: 500)
+        }
+        .onAppear {
+            let faceTimeLink = fetchAdminUserMetadata().first?.facetime
+            if faceTimeLink == nil || faceTimeLink?.isEmpty == true {
+                sharePlayStatus = "Facetimeリンクが設定されていません。"
+            } else {
+                sharePlayStatus = faceTimeLink!
+            }
         }
     }
                          

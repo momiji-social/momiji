@@ -11,7 +11,6 @@ func handleGroupMetadata(appState: AppState, event: Event) {
     let name = tags.first(where: { $0.id == "name" })?.otherInformation.first
     let about = tags.first(where: { $0.id == "about" })?.otherInformation.first
     let picture = tags.first(where: { $0.id == "picture" })?.otherInformation.first
-    let link = tags.first(where: { $0.id == "r" })?.otherInformation.first
     
     
     let dateFormatter = DateFormatter()
@@ -29,11 +28,11 @@ func handleGroupMetadata(appState: AppState, event: Event) {
         isPublic: isPublic,
         isOpen: isOpen,
         isMember: false,
-        isAdmin: false,
-        link: link
+        isAdmin: appState.allChatGroup.contains(where: { $0.id == groupId })
     )
     
     DispatchQueue.main.async {
+        appState.allChatGroup.removeAll(where: { $0.id == groupId })
         appState.allChatGroup.append(metadata)
         
         // Extract the top 20 groups from the newest group metadata

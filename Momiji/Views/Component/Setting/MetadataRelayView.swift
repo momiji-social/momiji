@@ -13,7 +13,7 @@ struct MetadataRelayView: View {
         relays.filter { !$0.supportsNip29 }
     }
     
-    @State private var suggestedRelays: [String] = ["wss://relay.damus.io", "wss://nostr.land", "wss://yabu.me", "ws://217.142.246.199:2929"]
+    @State private var suggestedRelays: [String] = ["wss://relay.damus.io", "wss://nostr.land", "wss://yabu.me"]
     var filteredSuggestedRelays: [String] {
         let relayUrls = relays.map { $0.url }
         return suggestedRelays.filter { !relayUrls.contains($0) }
