@@ -13,4 +13,5 @@ struct UserMetadata: Encodable, Hashable {
     var bot: Bool?
     var lud16: String?
     var createdAt: Date
+    var facetime: String?
 }

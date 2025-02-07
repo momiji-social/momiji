@@ -62,7 +62,7 @@ struct CreateSessionView: View {
                                 .foregroundColor(.white)
                         }
                         
-                        Text("New Playlist")
+                        Text("New Group")
                             .padding(.leading, 8)
                         Spacer()
                     }
