@@ -29,6 +29,7 @@ class AppState: ObservableObject {
             chatMessageNumResults = 50
         }
     }
+    @Published var selectedEditingGroup: ChatGroupMetadata?
     @Published var allChatGroup: Array<ChatGroupMetadata> = []
     @Published var allChatMessage: Array<ChatMessageMetadata> = []
     @Published var allUserMetadata: Array<UserMetadata> = []
@@ -407,22 +408,27 @@ class AppState: ObservableObject {
             self.lastEditGroupMetadataEventId = event.id
             
             nostrClient.send(event: event, onlyToRelayUrls: [nip1relayUrl])
-            print("groupEditMetadata event sent to \(nip1relayUrl)")
+            print("Edit group link event sent to \(nip1relayUrl)")
         } catch {
             print("Failed to sign or send event: \(error)")
         }
     }
     
-    /// Edit the group's metadata and set the r tag (FaceTime link).
+    /// Edit the group's metadata
     @MainActor
-    func editGroupMetadata(ownerAccount: OwnerAccount, group: ChatGroupMetadata, name: String, about: String) async {
+    func editGroupMetadata(ownerAccount: OwnerAccount, groupId: String, name: String, about: String) async {
         guard let key = ownerAccount.getKeyPair() else {
             print("KeyPair not found.")
             return
         }
         
-        let relayUrl = group.relayUrl
-        let groupId = group.id
+//        let relayUrl = group.relayUrl
+        guard let relayUrl = self.selectedNip29Relay?.url else{
+            print("Nip29 relay not selected")
+            return
+        }
+//        let groupId = group.id
+        print("groupId: \(groupId)")
         
         let tags: [Tag] = [
             Tag(id: "h", otherInformation: groupId),
@@ -435,7 +441,7 @@ class AppState: ObservableObject {
             createdAt: .init(),
             kind: Kind.groupEditMetadata,
             tags: tags,
-            content: "change metadata"
+            content: ""
         )
 
         
@@ -443,6 +449,41 @@ class AppState: ObservableObject {
             try event.sign(with: key)
             
             self.lastEditGroupMetadataEventId = event.id
+            
+            nostrClient.send(event: event, onlyToRelayUrls: [relayUrl])
+        } catch {
+            print("Failed to sign or send event: \(error)")
+        }
+    }
+    
+    /// Create a group
+    @MainActor
+    func createGroup(ownerAccount: OwnerAccount, groupId: String, name: String, about: String) async {
+        guard let key = ownerAccount.getKeyPair() else {
+            print("KeyPair not found.")
+            return
+        }
+        
+        guard let relayUrl = self.selectedNip29Relay?.url else{
+            print("Nip29 relay not selected")
+            return
+        }
+        
+        let tags: [Tag] = [
+            Tag(id: "h", otherInformation: groupId),
+        ]
+        
+        var event = Event(
+            pubkey: ownerAccount.publicKey,
+            createdAt: .init(),
+            kind: Kind.groupCreate,
+            tags: tags,
+            content: ""
+        )
+
+        
+        do {
+            try event.sign(with: key)
             
             nostrClient.send(event: event, onlyToRelayUrls: [relayUrl])
         } catch {

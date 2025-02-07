@@ -97,7 +97,7 @@ struct SessionDetailView: View {
                                 .frame(maxWidth: .infinity)
                                 .padding()
                         }
-                        .disabled(groupStateObserver.isEligibleForGroupSession || fetchAdminUserMetadata().first?.facetime == nil)
+                        .disabled(groupStateObserver.isEligibleForGroupSession || fetchAdminUserMetadata().first?.facetime == nil || fetchAdminUserMetadata().first?.facetime == "")
                         .tint(.green)
                         Button(action: {
                             Task {

@@ -18,6 +18,7 @@ struct SessionLinkView: View {
             
             HStack {
                 Button(action: {
+                    appState.selectedEditingGroup = nil
                     sheetDetail = nil
                 }) {
                     Image(systemName: "xmark")
@@ -42,16 +43,18 @@ struct SessionLinkView: View {
                 
                 Button(action: {
                     Task {
-                        guard
-                            let group = appState.selectedGroup,
-                            let account = appState.selectedOwnerAccount
-                        else {
+                        guard let account = appState.selectedOwnerAccount else {
+                            print("ownerAccount not set")
                             return
                         }
                         
-                        // Changing group metadata
-                        await appState.editGroupMetadata(ownerAccount: account, group: group, name: groupName, about: groupDescription)
-                        // Set up a facetime link
+                        if let groupId = appState.selectedEditingGroup?.id {
+                            await appState.editGroupMetadata(ownerAccount: account, groupId: groupId, name: groupName, about: groupDescription)
+                        } else {
+                            let groupId = UUID().uuidString
+                            await appState.createGroup(ownerAccount: account, groupId: groupId, name: groupName, about: groupDescription)
+                        }
+                        
                         await appState.editFacetimeLink(link: groupLink)
                         
                     }
@@ -150,7 +153,7 @@ struct SessionLinkView: View {
         }
         .padding()
         .onAppear {
-            if let groupMetadata = appState.selectedGroup {
+            if let groupMetadata = appState.selectedEditingGroup {
                 groupImage = groupMetadata.picture ?? ""
                 groupName = groupMetadata.name ?? ""
                 groupDescription = groupMetadata.about ?? ""
