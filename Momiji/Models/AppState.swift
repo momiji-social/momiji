@@ -16,6 +16,8 @@ class AppState: ObservableObject {
     
     /// ID of the last groupEditMetadata event that was sent.
     @Published var lastEditGroupMetadataEventId: String?
+    @Published var lastCreateGroupMetadataEventId: String?
+    @Published var createdGroupMetadata: (ownerAccount: OwnerAccount?, groupId: String?, name: String?, about: String?, link: String?)
     
     /// Flag to close the EditSessionLink sheet once the Relay returns OK
     @Published var shouldCloseEditSessionLinkSheet: Bool = false
@@ -405,8 +407,6 @@ class AppState: ObservableObject {
         do {
             try event.sign(with: key)
             
-            self.lastEditGroupMetadataEventId = event.id
-            
             nostrClient.send(event: event, onlyToRelayUrls: [nip1relayUrl])
             print("Edit group link event sent to \(nip1relayUrl)")
         } catch {
@@ -422,13 +422,10 @@ class AppState: ObservableObject {
             return
         }
         
-//        let relayUrl = group.relayUrl
         guard let relayUrl = self.selectedNip29Relay?.url else{
             print("Nip29 relay not selected")
             return
         }
-//        let groupId = group.id
-        print("groupId: \(groupId)")
         
         let tags: [Tag] = [
             Tag(id: "h", otherInformation: groupId),
@@ -458,7 +455,7 @@ class AppState: ObservableObject {
     
     /// Create a group
     @MainActor
-    func createGroup(ownerAccount: OwnerAccount, groupId: String, name: String, about: String) async {
+    func createGroup(ownerAccount: OwnerAccount, groupId: String) async {
         guard let key = ownerAccount.getKeyPair() else {
             print("KeyPair not found.")
             return
@@ -484,6 +481,8 @@ class AppState: ObservableObject {
         
         do {
             try event.sign(with: key)
+            
+            self.lastCreateGroupMetadataEventId = event.id
             
             nostrClient.send(event: event, onlyToRelayUrls: [relayUrl])
         } catch {
@@ -612,6 +611,23 @@ extension AppState: NostrClientDelegate {
                 {
                     DispatchQueue.main.async {
                         self.shouldCloseEditSessionLinkSheet = true
+                    }
+                }
+                
+                if let lastId = self.lastCreateGroupMetadataEventId,
+                   lastId == id,
+                   acceptance == true {
+                    Task {
+                        guard let ownerAccount = self.createdGroupMetadata.ownerAccount,
+                              let groupId = self.createdGroupMetadata.groupId,
+                              let name = self.createdGroupMetadata.name,
+                              let about = self.createdGroupMetadata.about,
+                              let link = self.createdGroupMetadata.link else {
+                            print("Missing required metadata for editing group")
+                            return
+                        }
+                        await self.editGroupMetadata(ownerAccount: ownerAccount, groupId: groupId, name: name, about: about)
+                        await self.editFacetimeLink(link: link)
                     }
                 }
 

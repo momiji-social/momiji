@@ -50,13 +50,13 @@ struct SessionLinkView: View {
                         
                         if let groupId = appState.selectedEditingGroup?.id {
                             await appState.editGroupMetadata(ownerAccount: account, groupId: groupId, name: groupName, about: groupDescription)
+                            await appState.editFacetimeLink(link: groupLink)
                         } else {
                             let groupId = UUID().uuidString
-                            await appState.createGroup(ownerAccount: account, groupId: groupId, name: groupName, about: groupDescription)
+                            appState.createdGroupMetadata = (ownerAccount: account, groupId: groupId, name: groupName, about: groupDescription, link: groupLink)
+                            
+                            await appState.createGroup(ownerAccount: account, groupId: groupId)
                         }
-                        
-                        await appState.editFacetimeLink(link: groupLink)
-                        
                     }
                 }) {
                     Text("Create")
