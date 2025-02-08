@@ -88,7 +88,7 @@ struct CreateSessionView: View {
                 
                 ForEach(appState.allChatGroup.filter({$0.isAdmin }), id: \.id) { group in
                     Button(action: {
-                        appState.selectedGroup = group
+                        appState.selectedEditingGroup = group
                         sheetDetailForSessionLink = InventoryItem(
                             id: "0123456789",
                             partNumber: "Z-1234A",

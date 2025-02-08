@@ -18,6 +18,7 @@ struct SessionLinkView: View {
             
             HStack {
                 Button(action: {
+                    appState.selectedEditingGroup = nil
                     sheetDetail = nil
                 }) {
                     Image(systemName: "xmark")
@@ -42,18 +43,20 @@ struct SessionLinkView: View {
                 
                 Button(action: {
                     Task {
-                        guard
-                            let group = appState.selectedGroup,
-                            let account = appState.selectedOwnerAccount
-                        else {
+                        guard let account = appState.selectedOwnerAccount else {
+                            print("ownerAccount not set")
                             return
                         }
                         
-                        // Changing group metadata
-                        await appState.editGroupMetadata(ownerAccount: account, group: group, name: groupName, about: groupDescription)
-                        // Set up a facetime link
-                        await appState.editFacetimeLink(link: groupLink)
-                        
+                        if let groupId = appState.selectedEditingGroup?.id {
+                            await appState.editGroupMetadata(ownerAccount: account, groupId: groupId, name: groupName, about: groupDescription)
+                            await appState.editFacetimeLink(link: groupLink)
+                        } else {
+                            let groupId = UUID().uuidString
+                            appState.createdGroupMetadata = (ownerAccount: account, groupId: groupId, name: groupName, about: groupDescription, link: groupLink)
+                            
+                            await appState.createGroup(ownerAccount: account, groupId: groupId)
+                        }
                     }
                 }) {
                     Text("Create")
@@ -150,7 +153,7 @@ struct SessionLinkView: View {
         }
         .padding()
         .onAppear {
-            if let groupMetadata = appState.selectedGroup {
+            if let groupMetadata = appState.selectedEditingGroup {
                 groupImage = groupMetadata.picture ?? ""
                 groupName = groupMetadata.name ?? ""
                 groupDescription = groupMetadata.about ?? ""
